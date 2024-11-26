@@ -8,16 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
-    static let halloweenEmojis = ["👻", "🎃", "👿", "💀", "🕷️", "🧙‍♀️", "🙀", "👹", "👺", "🧌" ]
-    static let vehicleEmojis = ["🚗", "🚕", "🚌", "🚓", "🚑", "🚒", "🚃", "🛫", "⛵️", "🚁"]
-    static let sportEmojis = ["⚽️", "🏀", "🏈", "⚾️", "🎾", "🏐", "🏓", "🎱", "🏸", "🏏"]
+    static let halloweenEmojis = ["👻", "🎃", "👿", "💀", "🕷️"]
+    static let vehicleEmojis = ["🚗", "🚕", "🚌", "🚓", "🚑"]
+    static let sportEmojis = ["⚽️", "🏀", "🏈", "⚾️", "🎾"]
     
     
-    @State private var emojis = halloweenEmojis
+    @State private var emojis = halloweenEmojis + halloweenEmojis
     @State private var selectedTheme = "Halloween"
-
-    
-    @State var cardCount: Int = 10
+    @State private var faceUpCardIndices: [Bool] = Array(repeating: false, count: 10)
     
     var body: some View {
         Text("Memorise!")
@@ -35,9 +33,13 @@ struct ContentView: View {
     var cards: some View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 95))]) {
             
-            ForEach(0..<cardCount, id: \.self) { index in
-                CardView(content: emojis[index])
-                    .aspectRatio(1, contentMode: .fit)
+            ForEach(0..<emojis.count, id: \.self) { index in
+                CardView(
+                    content: emojis[index],
+                    isFaceUp: faceUpCardIndices[index],
+                    onTap: { faceUpCardIndices[index].toggle() }
+                )
+                .aspectRatio(1, contentMode: .fit)
             }
         }
         .foregroundStyle(.red)
@@ -54,8 +56,9 @@ struct ContentView: View {
     func themeButton(name: String, icon: String, emojiArr: [String]) -> some View {
         VStack {
             Button(action: {
-                emojis = emojiArr.shuffled()
+                emojis = (emojiArr + emojiArr).shuffled()
                 selectedTheme = name
+                faceUpCardIndices = Array(repeating: false, count: 10)
             }, label: {
                 Image(systemName: icon)
                     .font(.title)
@@ -70,7 +73,8 @@ struct ContentView: View {
 
 struct CardView: View {
     let content: String
-    @State var isFaceUp = true
+    let isFaceUp: Bool
+    let onTap: () -> Void
     
     var body: some View {
         ZStack {
@@ -83,9 +87,7 @@ struct CardView: View {
             .opacity(isFaceUp ? 1 : 0)
             base.fill().opacity(isFaceUp ? 0 : 1)
         }
-        .onTapGesture {
-            isFaceUp = !isFaceUp
-        }
+        .onTapGesture(perform: onTap)
     }
 }
 
