@@ -8,13 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    static let halloweenEmojis = ["👻", "🎃", "👿", "💀", "🕷️"]
-    static let vehicleEmojis = ["🚗", "🚕", "🚌", "🚓", "🚑"]
-    static let sportEmojis = ["⚽️", "🏀", "🏈", "⚾️", "🎾"]
+    let halloweenEmojis = ["👻", "🎃", "👿", "💀", "🕷️"]
+    let vehicleEmojis = ["🚗", "🚕", "🚌", "🚓", "🚑"]
+    let sportEmojis = ["⚽️", "🏀", "🏈", "⚾️", "🎾"]
     
+    let halloweenColor = Color.orange
+    let vehicleColor = Color.yellow
+    let sportColor = Color.green
     
-    @State private var emojis = halloweenEmojis + halloweenEmojis
+    //Default to halloween set of emojis
+    @State private var emojis = ["👻", "🎃", "👿", "💀", "🕷️", "👻", "🎃", "👿", "💀", "🕷️"]
     @State private var selectedTheme = "Halloween"
+    @State private var selectedColor = Color.orange
     @State private var faceUpCardIndices: [Bool] = Array(repeating: false, count: 10)
     
     var body: some View {
@@ -42,23 +47,24 @@ struct ContentView: View {
                 .aspectRatio(1, contentMode: .fit)
             }
         }
-        .foregroundStyle(.red)
+        .foregroundStyle(selectedColor)
     }
     
     var themeButtons: some View {
         HStack(spacing: 50) {
-            themeButton(name: "Halloween", icon: "theatermasks", emojiArr: ContentView.halloweenEmojis)
-            themeButton(name: "Vehicles", icon: "car.rear", emojiArr: ContentView.vehicleEmojis)
-            themeButton(name: "Sports", icon: "basketball", emojiArr: ContentView.sportEmojis)
+            themeButton(name: "Halloween", icon: "theatermasks", emojiArr: halloweenEmojis, color: halloweenColor)
+            themeButton(name: "Vehicles", icon: "car.rear", emojiArr: vehicleEmojis, color: vehicleColor)
+            themeButton(name: "Sports", icon: "basketball", emojiArr: sportEmojis, color: sportColor)
         }
     }
     
-    func themeButton(name: String, icon: String, emojiArr: [String]) -> some View {
+    func themeButton(name: String, icon: String, emojiArr: [String], color: Color) -> some View {
         VStack {
             Button(action: {
                 emojis = (emojiArr + emojiArr).shuffled()
                 selectedTheme = name
                 faceUpCardIndices = Array(repeating: false, count: 10)
+                selectedColor = color
             }, label: {
                 Image(systemName: icon)
                     .font(.title)
